@@ -16,38 +16,36 @@ export default class CalendarHeatMap extends Component {
      * @param {Date Object} end_date Date till which the graph needs to be rendered
      */
     getNumberOfWeeks(start_date, end_date) {
+        // TODO: Prevent start_date to be after end_date, throw an error like react does
+        // TODO: Check if the start_date is present, otherwise just assume it to be exactly 1 year back
         let weeks, days, difference_in_days;
 
         difference_in_days = Math.floor((end_date.getTime() - start_date.getTime()) / MILLISECONDS_IN_A_DAY);
 
-        weeks = (difference_in_days > DAYS_IN_A_WEEK) ? difference_in_days % DAYS_IN_A_WEEK : 0;
+        weeks = (difference_in_days > DAYS_IN_A_WEEK) ? Math.floor(difference_in_days / DAYS_IN_A_WEEK) : 0;
         days = difference_in_days - (weeks * DAYS_IN_A_WEEK);
-
         return { days, weeks }
     }
 
-    generateWeeksForYears = (start_date, end_date) => {
-        let output = [],
-            x = 0,
-            y = 0;
-
-        for (let index = 0; index < 52; index++) {
-            output.push(<Week key={index} x={x} y={y}></Week>);
+    generateWeeksForYears = (numberOfWeeks) => {
+        let weekTags = [], x = 0, y = 0;
+        while (numberOfWeeks > 0) {
+            weekTags.push(<Week key={numberOfWeeks} x={x} y={y}></Week>);
             x += 11;
+            numberOfWeeks--;
         }
-
-        return output;
+        return weekTags;
     }
 
     render() {
+        let {weeks} = this.getNumberOfWeeks(new Date("09/20/2017"), new Date("09/23/2018"))
         return (
             <div className="text-center">
                 <h1>Calendar HeatMap</h1>
                 <div>
                     <svg width="590" height="88" className="js-calendar-graph-svg">
                         <g>
-                            {this.generateWeeksForYears()}
-                            {console.log(this.getNumberOfWeeks(new Date("09/20/2018"), new Date("09/23/2018")))}
+                            {this.generateWeeksForYears(weeks)}
                             {/*
                             <text x="11" y="-8" className="month">Sep</text>
                             <text x="51" y="-8" className="month">Oct</text>
